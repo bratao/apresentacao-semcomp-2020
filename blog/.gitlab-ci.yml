@@ -1,0 +1,35 @@
+image: python:3.8-buster
+
+cache:
+  key: "${CI_JOB_NAME}"
+  paths:
+    - .cache/pip
+    - .venv
+
+variables:
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: "/certs"
+
+# Stages order
+stages:
+  - Container Build
+
+
+services:
+  - docker:19.03.8-dind
+
+
+Build:
+  image: docker:19.03.8
+  stage: Container Build
+  tags:
+    - dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/blog:latest || true
+    - docker build --file docker/base/Dockerfile --cache-from $CI_REGISTRY_IMAGE/blog:latest --tag $CI_REGISTRY_IMAGE/blog:latest .
+    - docker push $CI_REGISTRY_IMAGE/bigode:latest
+  only:
+    - master
+

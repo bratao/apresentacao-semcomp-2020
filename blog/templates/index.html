@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Brunão News</h1>
+
+    <h1>Noticias</h1>
+    {% for noticia in noticias %}
+        Criada por: {{ noticia.user.name }}<br>
+        Conteudo: {{ noticia.content }}<br>
+        Comentarios: {{ noticia.count_comments }}<br>
+        <hr>
+    {% endfor %}
+
+{% endblock %}
